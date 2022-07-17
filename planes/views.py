@@ -5,14 +5,14 @@ from planes.models import Plane
 from planes.serializers import PlaneSerializer
 
 
-class PlaneView(ListCreateAPIView):
-    queryset = Plane.objects.all()
-    serializer_class = PlaneSerializer
+# class PlaneView(ListCreateAPIView):
+#     queryset = Plane.objects.all()
+#     serializer_class = PlaneSerializer
 
 
-class PlaneItemView(RetrieveUpdateDestroyAPIView):
-    queryset = Plane.objects.all()
-    serializer_class = PlaneSerializer
+# class PlaneItemView(RetrieveUpdateDestroyAPIView):
+#     queryset = Plane.objects.all()
+#     serializer_class = PlaneSerializer
 
 
 class PlaneViewSet(ModelViewSet):
