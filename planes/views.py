@@ -1,5 +1,5 @@
-# from rest_framework.generics import (
-#     RetrieveUpdateDestroyAPIView, ListCreateAPIView)
+"""Plane views
+"""
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -7,17 +7,12 @@ from planes.models import Plane
 from planes.serializers import PlaneSerializer
 
 
-# class PlaneView(ListCreateAPIView):
-#     queryset = Plane.objects.all()
-#     serializer_class = PlaneSerializer
-
-
-# class PlaneItemView(RetrieveUpdateDestroyAPIView):
-#     queryset = Plane.objects.all()
-#     serializer_class = PlaneSerializer
-
-
 class PlaneViewSet(ModelViewSet):
+    """
+    Plane Api, get, create, delete, update planes
+        get, post: /api/planes/
+        get, delete, put, patch: /api/planes/id/
+    """
     queryset = Plane.objects.all()
     serializer_class = PlaneSerializer
     filter_backends = [

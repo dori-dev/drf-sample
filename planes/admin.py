@@ -1,3 +1,5 @@
+"""Plane admin
+"""
 from django.contrib import admin
 from planes.models import Plane
 
