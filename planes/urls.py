@@ -1,7 +1,11 @@
 from django.urls import path
-from planes.views import PlaneAPIView, PlaneItemView
+from rest_framework.routers import SimpleRouter
+from planes.views import PlaneView, PlaneItemView, PlaneViewSet
+
+router = SimpleRouter()
+router.register('planes', PlaneViewSet)
 
 urlpatterns = [
-    path('planes/', PlaneAPIView.as_view()),
-    path('planes/<int:pk>/', PlaneItemView.as_view()),
-]
+    path('plane/', PlaneView.as_view()),
+    path('plane/<int:pk>/', PlaneItemView.as_view()),
+] + router.urls
