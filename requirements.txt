@@ -4,3 +4,4 @@ Markdown==3.3.7
 django-filter==22.1
 kavenegar==1.1.2
 django-dotenv==1.4.2
+kavenegar==1.1.2

@@ -130,7 +130,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# django rest framework
+# django rest framework config
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -139,3 +139,7 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend'
     ]
 }
+
+# kavenegar variables
+SMS_API_KEY = os.environ.get('SMS_API_KEY')
+OTP_TEMPLATE = os.environ.get('OTP_TEMPLATE')
