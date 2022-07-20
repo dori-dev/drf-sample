@@ -1,3 +1,4 @@
+"""otp views"""
 # standard libraries
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -61,7 +62,7 @@ class RequestOtpAPI(APIView):
         })
 
 
-class VerifyOtp(APIView):
+class VerifyOtpAPI(APIView):
     def post(self, request: Request):
         serializer = VerifyOtpSerializer(data=request.data)
         if serializer.is_valid():
