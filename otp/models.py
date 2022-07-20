@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
-def two_min_until(cls):
+def two_min_until():
     return timezone.now() + timedelta(seconds=120)
 
 
@@ -35,6 +35,9 @@ class Profile(models.Model):
         automatically created for that user"""
         if created:
             Profile.objects.create(user=instance)
+
+    def __str__(self):
+        return f"{self.user.username} profile"
 
 
 class OtpRequest(models.Model):
@@ -65,10 +68,6 @@ class OtpRequest(models.Model):
     valid_until = models.DateTimeField(
         default=two_min_until
     )
-    receipt_id = models.CharField(
-        max_length=255,
-        null=True
-    )
 
     def generate_password(self):
         self.password = self._random_password(4)
@@ -78,6 +77,9 @@ class OtpRequest(models.Model):
     def _random_password(length: int) -> str:
         return "".join(choices(digits, k=length))
 
+    def __str__(self):
+        return f"{self.phone} otp request."
+
     class Meta:
-        verbose_name = _('One Time Password')
-        verbose_name_plural = _('One Time Passwords')
+        verbose_name = _('OTP Request')
+        verbose_name_plural = _('OTP Requests')
