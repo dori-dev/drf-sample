@@ -1,4 +1,4 @@
-"""airplanes URL Configuration
+"""config URL Configuration
 """
 from django.contrib import admin
 from rest_framework.authtoken.views import obtain_auth_token
