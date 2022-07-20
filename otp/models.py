@@ -1,9 +1,9 @@
-# standard library imports
+# standard libraries
 from random import choices
 from string import digits
 from datetime import timedelta
 import uuid
-# third party library imports
+# third party libraries
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
