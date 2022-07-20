@@ -1,4 +1,7 @@
-# third party library imports
+# standard libraries
+from django.utils import timezone
+from django.contrib.auth import get_user_model
+# third party libraries
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.throttling import AnonRateThrottle
@@ -6,11 +9,14 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from kavenegar import KavenegarAPI
-# local library imports
+# local libraries
 from otp.serializers import (
-    RequestOtpSerializer, RequestOtpResponseSerializer
+    RequestOtpSerializer, RequestOtpResponseSerializer,
+    VerifyOtpSerializer, VerifyOtpResponseSerializer
 )
 from otp.models import OtpRequest
+
+from rest_framework.authtoken.models import Token
 
 
 class OncePerMinuteThrottle(AnonRateThrottle):
@@ -53,3 +59,59 @@ class RequestOtpAPI(APIView):
             'token': otp_request.password,
             'template': settings.OTP_TEMPLATE,
         })
+
+
+class VerifyOtp(APIView):
+    def post(self, request: Request):
+        serializer = VerifyOtpSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            if self._verify_data(data):
+                token, new_user = self._get_user_info(data)
+                return Response(
+                    data=VerifyOtpResponseSerializer({
+                        'token': token,
+                        'new_user': new_user
+                    }).data
+                )
+            else:
+                return Response(
+                    {"verify": "wrong data!"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @staticmethod
+    def _verify_data(data: dict):
+        query = OtpRequest.objects.filter(
+            request_id=data['request_id'],
+            phone=data['phone'],
+            password=data['password'],
+            valid_until__gte=timezone.now()
+        )
+        if query.exists():
+            return True
+        return False
+
+    @staticmethod
+    def _get_user_info(data: dict) -> tuple:
+        User = get_user_model()
+        user_query = User.objects.filter(
+            username=data['phone']
+        )
+        if user_query.exists():
+            user = user_query.first()
+            new_user = False
+        else:
+            user = User.objects.create(
+                username=data['phone']
+            )
+            new_user = True
+        token, _ = Token.objects.get_or_create(
+            user=user
+        )
+        return token, new_user
