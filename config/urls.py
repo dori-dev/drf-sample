@@ -7,5 +7,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('planes.urls')),
+    path('otp/', include('otp.urls')),
     path('token/', obtain_auth_token),
 ]
