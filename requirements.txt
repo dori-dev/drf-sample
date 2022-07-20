@@ -2,3 +2,5 @@ Django==4.0.6
 djangorestframework==3.13.1
 Markdown==3.3.7
 django-filter==22.1
+kavenegar==1.1.2
+django-dotenv==1.4.2
