@@ -1,7 +1,8 @@
+"""Otp models"""
 # standard libraries
 from random import choices
 from string import digits
-from datetime import timedelta
+from datetime import timedelta, datetime
 import uuid
 # third party libraries
 from django.db import models
@@ -12,7 +13,9 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
-def two_min_until():
+def two_min_until() -> datetime:
+    """return time of two min after now
+    """
     return timezone.now() + timedelta(seconds=120)
 
 
@@ -23,6 +26,8 @@ class User(AbstractUser):
 
 
 class Profile(models.Model):
+    """User profile model
+    """
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE
@@ -41,6 +46,16 @@ class Profile(models.Model):
 
 
 class OtpRequest(models.Model):
+    """Otp request model
+
+    Fields:
+        request_id (UUIDField): random uuid for request
+        channel (CharField): user device
+        phone (CharField): user phone number
+        password (CharField): user one time password
+        valid_from (DateTimeField): time of when the user requested
+        valid_until (DateTimeField): As long as the user request id valid
+    """
     class OtpChannel(models.TextChoices):
         ANDROID = _("android")
         IOS = _("ios")
@@ -70,11 +85,18 @@ class OtpRequest(models.Model):
     )
 
     def generate_password(self):
+        """generate one time password and set valid_until
+        """
         self.password = self._random_password(4)
         self.valid_until = timezone.now() + timedelta(seconds=120)
 
     @staticmethod
     def _random_password(length: int) -> str:
+        """generate random password
+
+        Args:
+            length (int): password length
+        """
         return "".join(choices(digits, k=length))
 
     def __str__(self):

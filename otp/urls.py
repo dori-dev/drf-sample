@@ -1,4 +1,4 @@
-"""otp urls
+"""Otp urls
 """
 from django.urls import path
 from otp.views import RequestOtpAPI, VerifyOtpAPI

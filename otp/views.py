@@ -1,10 +1,12 @@
-"""otp views"""
+"""Otp views
+"""
 # standard libraries
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 # third party libraries
 from django.conf import settings
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework import status
 from rest_framework.request import Request
@@ -17,10 +19,10 @@ from otp.serializers import (
 )
 from otp.models import OtpRequest
 
-from rest_framework.authtoken.models import Token
-
 
 class OncePerMinuteThrottle(AnonRateThrottle):
+    """User can call api 1 time per minute
+    """
     rate = "1/minute"
 
 
@@ -30,6 +32,8 @@ class RequestOtpAPI(APIView):
     ]
 
     def post(self, request: Request):
+        """post method support for request otp api
+        """
         serializer = RequestOtpSerializer(data=request.data)
         if serializer.is_valid():
             otp_request = self._create_otp_request(serializer)
@@ -45,6 +49,8 @@ class RequestOtpAPI(APIView):
 
     @staticmethod
     def _create_otp_request(serializer: RequestOtpSerializer) -> OtpRequest:
+        """create otp request object with serializer
+        """
         otp_request: OtpRequest = OtpRequest()
         otp_request.phone = serializer.validated_data['phone']
         otp_request.channel = serializer.validated_data['channel']
@@ -54,6 +60,8 @@ class RequestOtpAPI(APIView):
 
     @staticmethod
     def _send_sms(otp_request: OtpRequest) -> None:
+        """send sms to phone with kavenegar api
+        """
         api = KavenegarAPI(settings.SMS_API_KEY)
         api.verify_lookup({
             'receptor': otp_request.phone,
@@ -63,7 +71,12 @@ class RequestOtpAPI(APIView):
 
 
 class VerifyOtpAPI(APIView):
+    """Verify request id and one time password with phone.
+    """
+
     def post(self, request: Request):
+        """post method support for verify otp api
+        """
         serializer = VerifyOtpSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
@@ -88,6 +101,10 @@ class VerifyOtpAPI(APIView):
 
     @staticmethod
     def _verify_data(data: dict):
+        """verify request id, phone and password
+        if it object exists in return True and means
+        its verified, else return False
+        """
         query = OtpRequest.objects.filter(
             request_id=data['request_id'],
             phone=data['phone'],
@@ -100,6 +117,8 @@ class VerifyOtpAPI(APIView):
 
     @staticmethod
     def _get_user_info(data: dict) -> tuple:
+        """get user token and user state(new user)
+        """
         User = get_user_model()
         user_query = User.objects.filter(
             username=data['phone']
