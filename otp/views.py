@@ -11,7 +11,8 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from kavenegar import KavenegarAPI
+from drf_yasg.utils import swagger_auto_schema
+from kavenegar import KavenegarAPI, APIException
 # local libraries
 from otp.serializers import (
     RequestOtpSerializer, RequestOtpResponseSerializer,
@@ -31,13 +32,30 @@ class RequestOtpAPI(APIView):
         OncePerMinuteThrottle
     ]
 
+    @swagger_auto_schema(
+        request_body=RequestOtpSerializer,
+        # query_serializer=RequestOtpSerializer,
+        responses={
+            '200': RequestOtpResponseSerializer,
+            '400': 'bad request'
+        },
+        security=[],
+        operation_id='Otp Request',
+        operation_description='Request to server for create one time password'
+    )
     def post(self, request: Request):
         """post method support for request otp api
         """
         serializer = RequestOtpSerializer(data=request.data)
         if serializer.is_valid():
             otp_request = self._create_otp_request(serializer)
-            self._send_sms(otp_request)
+            try:
+                self._send_sms(otp_request)
+            except APIException:
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             return Response(
                 RequestOtpResponseSerializer(otp_request).data
             )
@@ -74,6 +92,18 @@ class VerifyOtpAPI(APIView):
     """Verify request id and one time password with phone.
     """
 
+    @swagger_auto_schema(
+        request_body=VerifyOtpSerializer,
+        # query_serializer=VerifyOtpSerializer,
+        responses={
+            '200': VerifyOtpResponseSerializer,
+            '403': 'wrong data',
+            '400': 'bad request'
+        },
+        security=[],
+        operation_id='Otp Verify',
+        operation_description='Verify one time password and return token'
+    )
     def post(self, request: Request):
         """post method support for verify otp api
         """
