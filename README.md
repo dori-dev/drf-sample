@@ -35,6 +35,9 @@ pip install -r requirements.txt
 ## Set Environ Variables
 
 rename `.env.example` to `.env` and change values.<br>
+```
+mv .env.example .env
+```
 create account in [kavenegar.com](https://kavenegar.com/) and change `SMS_API_KEY` value to your **api key**.<br>
 create verification template and change `OTP_TEMPLATE` value to your **template name**.
 
