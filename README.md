@@ -1,6 +1,6 @@
 # DRF Sample
 
-The sample project for django rest framework
+The sample project for django rest framework.
 
 #
 
